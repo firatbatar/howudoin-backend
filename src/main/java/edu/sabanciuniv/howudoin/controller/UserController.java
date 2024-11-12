@@ -44,16 +44,19 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginModel loginModel) {
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginModel loginModel) throws BadCredentialsException {
         this.doAuthenticate(loginModel.getEmail(), loginModel.getPassword());
+
         UserDetails userDetails = userDetailsService.loadUserByUsername(loginModel.getEmail());
         String token = this.jwtHelperUtils.generateToken(userDetails);
-        LoginResponse loginResponse = new LoginResponse(token, loginModel.getEmail());
-        return ResponseEntity.ok(loginResponse);
+        return ResponseEntity.ok(
+                new LoginResponse(token, loginModel.getEmail())
+        );
     }
 
-    private void doAuthenticate(String username, String password) {
-        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(username, password);
+    private void doAuthenticate(String username, String password) throws BadCredentialsException {
+        UsernamePasswordAuthenticationToken authentication =
+                new UsernamePasswordAuthenticationToken(username, password);
         try {
             authenticationManager.authenticate(authentication);
         } catch (BadCredentialsException e) {

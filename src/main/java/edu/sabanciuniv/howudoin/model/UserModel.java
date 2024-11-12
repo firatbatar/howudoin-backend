@@ -11,7 +11,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserModel {
-    @Id private String email;
+    @Id
+    private String email;
     private String name;
     private String lastname;
     private String password;
