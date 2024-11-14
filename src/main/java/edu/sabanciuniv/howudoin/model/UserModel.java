@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.List;
+import java.util.HashSet;
 
 @Document("Users")
 @Data
@@ -18,6 +18,6 @@ public class UserModel {
     private String name;
     private String lastname;
     private String password;
-    private List<String> friendList = List.of();
-    private List<String> friendRequests = List.of();
+    private HashSet<String> friendList = new HashSet<>();
+    private HashSet<String> friendRequests = new HashSet<>();
 }

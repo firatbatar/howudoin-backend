@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashSet;
 import java.util.List;
 
 @RestController
@@ -34,7 +35,7 @@ public class FriendController {
 
     @PostMapping("/accept")
     public ResponseEntity<String> acceptFriendRequests() {
-        List<String> friends = friendService.acceptFriendRequests();
+        HashSet<String> friends = friendService.acceptFriendRequests();
         String message = "Accepted friend requests from: " + friends;
         if (friends == null) {
             message = "No friend requests to accept.";

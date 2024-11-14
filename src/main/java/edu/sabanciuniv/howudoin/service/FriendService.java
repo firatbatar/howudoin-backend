@@ -9,6 +9,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -34,12 +35,12 @@ public class FriendService {
         }
     }
 
-    public List<String> acceptFriendRequests() {
+    public HashSet<String> acceptFriendRequests() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         UserModel user = userRepository.findById(email).orElseThrow();
 
-        List<String> friendList = user.getFriendList();
-        List<String> friendRequests = user.getFriendRequests();
+        HashSet<String> friendList = user.getFriendList();
+        HashSet<String> friendRequests = user.getFriendRequests();
         if (friendRequests.isEmpty()) {
             return null;
         }
@@ -52,7 +53,7 @@ public class FriendService {
         });
 
         user.setFriendList(friendList);
-        user.setFriendRequests(new ArrayList<>());
+        user.setFriendRequests(new HashSet<>());
         userRepository.save(user);
         return friendRequests;
     }
