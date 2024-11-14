@@ -42,11 +42,14 @@ public class FriendController {
     @PostMapping("/accept")
     public ResponseEntity<String> acceptFriendRequests() {
         HashSet<String> friends = friendService.acceptFriendRequests();
-        String message = "Accepted friend requests from: " + friends;
+
         if (friends == null) {
-            message = "No friend requests to accept.";
+            return ResponseEntity.badRequest().body("An error occurred.");
+        } else if (friends.isEmpty()) {
+            return ResponseEntity.badRequest().body("No friend requests to accept.");
+        } else {
+            return ResponseEntity.ok("Accepted friend requests from: " + friends);
         }
-        return ResponseEntity.ok(message);
     }
 
     @GetMapping("/")

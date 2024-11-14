@@ -1,10 +1,8 @@
 package edu.sabanciuniv.howudoin.service;
 
-import edu.sabanciuniv.howudoin.model.FriendRequest;
 import edu.sabanciuniv.howudoin.model.UserInfoModel;
 import edu.sabanciuniv.howudoin.model.UserModel;
 import edu.sabanciuniv.howudoin.repository.UserRepository;
-import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -24,8 +22,8 @@ public class FriendService {
     }
 
     public int sendFriendRequest(String friendEmail) {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        UserModel user = userRepository.findById(email).orElseThrow();
+        UserModel user = getCurrentUser();
+
         try {
             UserModel friend = userRepository.findById(friendEmail).orElseThrow();
 
@@ -40,21 +38,20 @@ public class FriendService {
     }
 
     public HashSet<String> acceptFriendRequests() {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        UserModel user = userRepository.findById(email).orElseThrow();
+        UserModel user = getCurrentUser();
 
         HashSet<String> friendList = user.getFriendList();
         HashSet<String> friendRequests = user.getFriendRequests();
-        if (friendRequests.isEmpty()) {
+        try {
+            friendRequests.forEach(friendEmail -> {
+                UserModel friend = userRepository.findById(friendEmail).orElseThrow();
+                friendList.add(friendEmail);
+                friend.getFriendList().add(user.getEmail());
+                userRepository.save(friend);
+            });
+        } catch (NoSuchElementException e) {
             return null;
         }
-
-        friendRequests.forEach(friendEmail -> {
-            UserModel friend = userRepository.findById(friendEmail).orElseThrow();
-            friendList.add(friendEmail);
-            friend.getFriendList().add(user.getEmail());
-            userRepository.save(friend);
-        });
 
         user.setFriendList(friendList);
         user.setFriendRequests(new HashSet<>());
@@ -63,19 +60,23 @@ public class FriendService {
     }
 
     public List<UserInfoModel> getFriendList() {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        UserModel user = userRepository.findById(email).orElseThrow();
+        UserModel user = getCurrentUser();
 
         ArrayList<UserInfoModel> friendList = new ArrayList<>();
-        try {
             user.getFriendList().forEach(friendEmail -> {
-                UserModel friend = userRepository.findById(friendEmail).orElseThrow();
-                friendList.add(new UserInfoModel(friend.getEmail(), friend.getName(), friend.getLastname()));
+                try {
+                    UserModel friend = userRepository.findById(friendEmail).orElseThrow();
+                    friendList.add(new UserInfoModel(friend.getEmail(), friend.getName(), friend.getLastname()));
+                } catch (NoSuchElementException _) {
+                    friendList.add(new UserInfoModel(friendEmail, null, null));
+                }
             });
-        } catch (NoSuchElementException e) {
-            return friendList;
-        }
 
         return friendList;
+    }
+
+    private UserModel getCurrentUser() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.findById(email).orElseThrow();
     }
 }
