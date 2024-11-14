@@ -34,6 +34,29 @@ public class FriendService {
         }
     }
 
+    public List<String> acceptFriendRequests() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        UserModel user = userRepository.findById(email).orElseThrow();
+
+        List<String> friendList = user.getFriendList();
+        List<String> friendRequests = user.getFriendRequests();
+        if (friendRequests.isEmpty()) {
+            return null;
+        }
+
+        friendRequests.forEach(friendEmail -> {
+            UserModel friend = userRepository.findById(friendEmail).orElseThrow();
+            friendList.add(friendEmail);
+            friend.getFriendList().add(user.getEmail());
+            userRepository.save(friend);
+        });
+
+        user.setFriendList(friendList);
+        user.setFriendRequests(new ArrayList<>());
+        userRepository.save(user);
+        return friendRequests;
+    }
+
     public List<UserInfoModel> getFriendList() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         UserModel user = userRepository.findById(email).orElseThrow();

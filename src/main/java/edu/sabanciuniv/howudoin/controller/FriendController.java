@@ -33,7 +33,13 @@ public class FriendController {
     }
 
     @PostMapping("/accept")
-    public void acceptFriendRequest() {
+    public ResponseEntity<String> acceptFriendRequests() {
+        List<String> friends = friendService.acceptFriendRequests();
+        String message = "Accepted friend requests from: " + friends;
+        if (friends == null) {
+            message = "No friend requests to accept.";
+        }
+        return ResponseEntity.ok(message);
     }
 
     @GetMapping("/")
