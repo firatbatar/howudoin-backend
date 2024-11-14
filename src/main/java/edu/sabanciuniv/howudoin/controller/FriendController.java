@@ -26,11 +26,17 @@ public class FriendController {
 
     @PostMapping("/add")
     public ResponseEntity<String> addFriend(@RequestBody FriendRequest friendRequest) {
-        Boolean success = friendService.sendFriendRequest(friendRequest);
-        if (!success) {
-            return ResponseEntity.badRequest().body("User " + friendRequest.getEmail() + " not found.");
+        if (friendRequest.getEmail() == null) {
+            return ResponseEntity.badRequest().body("Email cannot be null.");
         }
-        return ResponseEntity.ok("Sent friend request to " + friendRequest.getEmail());
+        int status = friendService.sendFriendRequest(friendRequest.getEmail());
+
+        return switch (status) {
+            case -1 -> ResponseEntity.badRequest().body("User " + friendRequest.getEmail() + " not found.");
+            case 0 -> ResponseEntity.badRequest().body("User " + friendRequest.getEmail() + " is already your friend.");
+            case 1 -> ResponseEntity.ok("Sent friend request to " + friendRequest.getEmail());
+            default -> ResponseEntity.badRequest().body("An error occurred.");
+        };
     }
 
     @PostMapping("/accept")

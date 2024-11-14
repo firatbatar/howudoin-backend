@@ -4,6 +4,7 @@ import edu.sabanciuniv.howudoin.model.FriendRequest;
 import edu.sabanciuniv.howudoin.model.UserInfoModel;
 import edu.sabanciuniv.howudoin.model.UserModel;
 import edu.sabanciuniv.howudoin.repository.UserRepository;
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -22,16 +23,19 @@ public class FriendService {
         this.userRepository = userRepository;
     }
 
-    public Boolean sendFriendRequest(FriendRequest friendRequest) {
+    public int sendFriendRequest(String friendEmail) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         UserModel user = userRepository.findById(email).orElseThrow();
         try {
-            UserModel friend = userRepository.findById(friendRequest.getEmail()).orElseThrow();
+            UserModel friend = userRepository.findById(friendEmail).orElseThrow();
+
+            if (friend.getFriendList().contains(user.getEmail())) return 0;
+
             friend.getFriendRequests().add(user.getEmail());
             userRepository.save(friend);
-            return true;
+            return 1;
         } catch (NoSuchElementException e) {
-            return false;
+            return -1;
         }
     }
 
