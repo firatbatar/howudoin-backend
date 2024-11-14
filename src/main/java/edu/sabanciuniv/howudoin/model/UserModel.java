@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.List;
+
 @Document("Users")
 @Data
 @NoArgsConstructor
@@ -16,4 +18,6 @@ public class UserModel {
     private String name;
     private String lastname;
     private String password;
+    private List<String> friendList;
+    private List<String> friendRequests;
 }
