@@ -18,6 +18,6 @@ public class UserModel {
     private String name;
     private String lastname;
     private String password;
-    private List<String> friendList;
-    private List<String> friendRequests;
+    private List<String> friendList = List.of();
+    private List<String> friendRequests = List.of();
 }

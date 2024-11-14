@@ -1,5 +1,6 @@
 package edu.sabanciuniv.howudoin.service;
 
+import edu.sabanciuniv.howudoin.model.FriendRequest;
 import edu.sabanciuniv.howudoin.model.UserInfoModel;
 import edu.sabanciuniv.howudoin.model.UserModel;
 import edu.sabanciuniv.howudoin.repository.UserRepository;
@@ -20,6 +21,19 @@ public class FriendService {
         this.userRepository = userRepository;
     }
 
+    public Boolean sendFriendRequest(FriendRequest friendRequest) {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        UserModel user = userRepository.findById(email).orElseThrow();
+        try {
+            UserModel friend = userRepository.findById(friendRequest.getEmail()).orElseThrow();
+            friend.getFriendRequests().add(user.getEmail());
+            userRepository.save(friend);
+            return true;
+        } catch (NoSuchElementException e) {
+            return false;
+        }
+    }
+
     public List<UserInfoModel> getFriendList() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         UserModel user = userRepository.findById(email).orElseThrow();
@@ -30,7 +44,7 @@ public class FriendService {
                 UserModel friend = userRepository.findById(friendEmail).orElseThrow();
                 friendList.add(new UserInfoModel(friend.getEmail(), friend.getName(), friend.getLastname()));
             });
-        } catch (NullPointerException | NoSuchElementException e) {
+        } catch (NoSuchElementException e) {
             return friendList;
         }
 
