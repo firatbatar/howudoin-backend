@@ -1,6 +1,6 @@
 package edu.sabanciuniv.howudoin.controller;
 
-import edu.sabanciuniv.howudoin.model.FriendRequest;
+import edu.sabanciuniv.howudoin.model.UserRequest;
 import edu.sabanciuniv.howudoin.model.UserInfoModel;
 import edu.sabanciuniv.howudoin.service.FriendService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,16 +25,16 @@ public class FriendController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<String> addFriend(@RequestBody FriendRequest friendRequest) {
-        if (friendRequest.getEmail() == null) {
+    public ResponseEntity<String> addFriend(@RequestBody UserRequest userRequest) {
+        if (userRequest.getEmail() == null) {
             return ResponseEntity.badRequest().body("Email cannot be null.");
         }
-        int status = friendService.sendFriendRequest(friendRequest.getEmail());
+        int status = friendService.sendFriendRequest(userRequest.getEmail());
 
         return switch (status) {
-            case -1 -> ResponseEntity.badRequest().body("User " + friendRequest.getEmail() + " not found.");
-            case 0 -> ResponseEntity.badRequest().body("User " + friendRequest.getEmail() + " is already your friend.");
-            case 1 -> ResponseEntity.ok("Sent friend request to " + friendRequest.getEmail());
+            case -1 -> ResponseEntity.badRequest().body("User " + userRequest.getEmail() + " not found.");
+            case 0 -> ResponseEntity.badRequest().body("User " + userRequest.getEmail() + " is already your friend.");
+            case 1 -> ResponseEntity.ok("Sent friend request to " + userRequest.getEmail());
             default -> ResponseEntity.badRequest().body("An error occurred.");
         };
     }
