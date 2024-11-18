@@ -1,5 +1,13 @@
 package edu.sabanciuniv.howudoin.controller;
 
+import edu.sabanciuniv.howudoin.component.Message;
+import edu.sabanciuniv.howudoin.service.MessageService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
 @RestController
 @RequestMapping("/messages")
 public class MessageController {
@@ -7,21 +15,12 @@ public class MessageController {
     private MessageService messageService;
 
     @PostMapping("/send")
-    public ResponseEntity<Message> sendMessage(
-            @RequestBody MessageRequest request,
-            @RequestHeader("Authorization") String token) {
-        // Assume you have a utility to get user ID from JWT token
-        String senderId = JwtUtil.getUserIdFromToken(token);
-        Message message = messageService.sendMessage(senderId, request.getReceiverId(), request.getContent());
+    public ResponseEntity<Message> sendMessage(@RequestBody Message message) {
         return ResponseEntity.ok(message);
     }
 
     @GetMapping
-    public ResponseEntity<List<Message>> getMessages(
-            @RequestParam String friendId,
-            @RequestHeader("Authorization") String token) {
-        String userId = JwtUtil.getUserIdFromToken(token);
-        List<Message> messages = messageService.getConversationHistory(userId, friendId);
-        return ResponseEntity.ok(messages);
+    public ResponseEntity<List<Message>> getMessages() {
+        return ResponseEntity.ok().build();
     }
 }

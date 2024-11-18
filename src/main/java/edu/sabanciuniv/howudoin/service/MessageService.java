@@ -1,5 +1,7 @@
 package edu.sabanciuniv.howudoin.service;
 
+import org.springframework.stereotype.Service;
+
 @Service
 public class MessageService {
     @Autowired

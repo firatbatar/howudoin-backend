@@ -1,10 +1,16 @@
 package edu.sabanciuniv.howudoin.component;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.LocalDateTime;
 
 @Document(collection = "messages")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Message {
     @Id
     private String id;
@@ -13,16 +19,5 @@ public class Message {
     private String content;
     private LocalDateTime timestamp;
     private boolean isRead;
-    private String groupId;  // null for direct messages
-
-    // Constructor
-    public Message(String senderId, String receiverId, String content) {
-        this.senderId = senderId;
-        this.receiverId = receiverId;
-        this.content = content;
-        this.timestamp = LocalDateTime.now();
-        this.isRead = false;
-    }
-
-// Getters and Setters
-// Add standard getters and setters here
+    private String groupId;
+}
