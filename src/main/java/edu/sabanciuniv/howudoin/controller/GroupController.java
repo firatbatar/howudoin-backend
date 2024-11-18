@@ -1,14 +1,18 @@
 package edu.sabanciuniv.howudoin.controller;
 
 import edu.sabanciuniv.howudoin.model.GroupModel;
+import edu.sabanciuniv.howudoin.model.UserRequest;
 import edu.sabanciuniv.howudoin.service.GroupService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/groups")
@@ -26,18 +30,32 @@ public class GroupController {
     }
 
     @PostMapping("/{groupId}/add-member")
-    public void addMember(@PathVariable int groupId) {
+    public ResponseEntity<String> addMember(
+            @PathVariable String groupId,
+            @RequestBody UserRequest userRequest
+    ) {
+        final String email = userRequest.getEmail();
+        if (userRequest.getEmail() == null) {
+            return ResponseEntity.badRequest().body("Email cannot be null.");
+        }
+
+        try {
+            groupService.addMember(groupId, email);
+            return ResponseEntity.ok("Member '" + email + "' added successfully");
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PostMapping("/{groupId}/send-message")
-    public void sendMessage(@PathVariable int groupId) {
+    public void sendMessage(@PathVariable String groupId) {
     }
 
     @GetMapping("/{groupId}/messages")
-    public void getMessages(@PathVariable int groupId) {
+    public void getMessages(@PathVariable String groupId) {
     }
 
     @GetMapping("/{groupId}/members")
-    public void getMembers(@PathVariable int groupId) {
+    public void getMembers(@PathVariable String groupId) {
     }
 }
