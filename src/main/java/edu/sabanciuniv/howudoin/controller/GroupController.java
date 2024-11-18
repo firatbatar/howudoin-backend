@@ -14,18 +14,18 @@ public class GroupController {
     }
 
     @PostMapping("/{groupId}/add-member")
-    public void addMember(@PathVariable Integer groupId) {
+    public void addMember(@PathVariable int groupId) {
     }
 
     @PostMapping("/{groupId}/send-message")
-    public void sendMessage(@PathVariable Integer groupId) {
+    public void sendMessage(@PathVariable int groupId) {
     }
 
     @GetMapping("/{groupId}/messages")
-    public void getMessages(@PathVariable Integer groupId) {
+    public void getMessages(@PathVariable int groupId) {
     }
 
     @GetMapping("/{groupId}/members")
-    public void getMembers(@PathVariable Integer groupId) {
+    public void getMembers(@PathVariable int groupId) {
     }
 }
