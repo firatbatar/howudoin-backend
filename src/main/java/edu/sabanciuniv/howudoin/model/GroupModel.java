@@ -14,7 +14,6 @@ import java.util.HashSet;
 @NoArgsConstructor
 public class GroupModel {
     @Id
-    private int groupID;
     private String name;
     private HashSet<String> members;
 }
