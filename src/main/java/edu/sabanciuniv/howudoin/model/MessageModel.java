@@ -14,10 +14,9 @@ import java.time.LocalDateTime;
 public class MessageModel {
     @Id
     private String id;
-    private String senderId;
-    private String receiverId;
+    private String sender;
+    private String receiver;
     private String content;
     private LocalDateTime timestamp;
-    private boolean isRead;
     private String groupId;
 }

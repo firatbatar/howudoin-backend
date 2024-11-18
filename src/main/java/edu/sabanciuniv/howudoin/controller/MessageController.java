@@ -11,12 +11,17 @@ import java.util.List;
 @RestController
 @RequestMapping("/messages")
 public class MessageController {
+    private final MessageService messageService;
+
     @Autowired
-    private MessageService messageService;
+    public MessageController(MessageService messageService) {
+        this.messageService = messageService;
+    }
 
     @PostMapping("/send")
     public ResponseEntity<MessageModel> sendMessage(@RequestBody MessageModel messageModel) {
-        return ResponseEntity.ok(messageModel);
+        MessageModel message = messageService.sendMessage(messageModel);
+        return ResponseEntity.ok(message);
     }
 
     @GetMapping
