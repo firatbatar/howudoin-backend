@@ -63,14 +63,14 @@ public class FriendService {
         UserModel user = getCurrentUser();
 
         ArrayList<UserInfoModel> friendList = new ArrayList<>();
-            user.getFriendList().forEach(friendEmail -> {
-                try {
-                    UserModel friend = userRepository.findById(friendEmail).orElseThrow();
-                    friendList.add(new UserInfoModel(friend.getEmail(), friend.getName(), friend.getLastname()));
-                } catch (NoSuchElementException _) {
-                    friendList.add(new UserInfoModel(friendEmail, null, null));
-                }
-            });
+        user.getFriendList().forEach(friendEmail -> {
+            try {
+                UserModel friend = userRepository.findById(friendEmail).orElseThrow();
+                friendList.add(new UserInfoModel(friend.getEmail(), friend.getName(), friend.getLastname()));
+            } catch (NoSuchElementException _) {
+                friendList.add(new UserInfoModel(friendEmail, null, null));
+            }
+        });
 
         return friendList;
     }
