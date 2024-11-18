@@ -35,10 +35,18 @@ public class MessageService {
         return messageRepository.save(messageModel);
     }
 
-    public List<MessageModel> getMessages() {
+    public List<MessageModel> getMessages(String friendEmail) {
         UserModel currentUser = this.getCurrentUser();
 
-        return messageRepository.findBySenderOrReceiverOrderByTimestampDesc(currentUser.getEmail(), currentUser.getEmail());
+        List<MessageModel> sentMessages = messageRepository.findBySenderAndReceiverOrderByTimestampDesc(currentUser.getEmail(), friendEmail);
+        List<MessageModel> receivedMessages = messageRepository.findBySenderAndReceiverOrderByTimestampDesc(friendEmail, currentUser.getEmail());
+
+        List<MessageModel> messages = new ArrayList<>();
+        messages.addAll(sentMessages);
+        messages.addAll(receivedMessages);
+        messages.sort((m1, m2) -> m2.getTimestamp().compareTo(m1.getTimestamp()));
+
+        return messages;
     }
 
     private UserModel getCurrentUser() {

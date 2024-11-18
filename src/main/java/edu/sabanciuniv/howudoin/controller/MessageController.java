@@ -1,5 +1,6 @@
 package edu.sabanciuniv.howudoin.controller;
 
+import edu.sabanciuniv.howudoin.model.FriendRequest;
 import edu.sabanciuniv.howudoin.model.MessageModel;
 import edu.sabanciuniv.howudoin.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +26,8 @@ public class MessageController {
     }
 
     @GetMapping
-    public ResponseEntity<List<MessageModel>> getMessages() {
-        List<MessageModel> messages = messageService.getMessages();
+    public ResponseEntity<List<MessageModel>> getMessages(@RequestBody FriendRequest friendRequest) {
+        List<MessageModel> messages = messageService.getMessages(friendRequest.getEmail());
         return ResponseEntity.ok(messages);
     }
 }

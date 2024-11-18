@@ -6,5 +6,5 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import java.util.List;
 
 public interface MessageRepository extends MongoRepository<MessageModel, String> {
-    List<MessageModel> findBySenderOrReceiverOrderByTimestampDesc(String sender, String receiver);
+    List<MessageModel> findBySenderAndReceiverOrderByTimestampDesc(String sender, String receiver);
 }
