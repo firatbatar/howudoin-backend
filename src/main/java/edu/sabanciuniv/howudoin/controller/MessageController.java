@@ -21,8 +21,15 @@ public class MessageController {
 
     @PostMapping("/send")
     public ResponseEntity<MessageModel> sendMessage(@RequestBody MessageModel messageModel) {
-        MessageModel message = messageService.sendMessage(messageModel);
-        return ResponseEntity.ok(message);
+        try {
+            MessageModel message = messageService.sendMessage(messageModel);
+            return ResponseEntity.ok(message);
+        } catch (Exception e) {
+            MessageModel message = new MessageModel();
+            message.setContent(e.getMessage());
+            return ResponseEntity.badRequest().body(message);
+        }
+
     }
 
     @GetMapping

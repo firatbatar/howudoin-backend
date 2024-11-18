@@ -26,8 +26,12 @@ public class MessageService {
         this.userRepository = userRepository;
     }
 
-    public MessageModel sendMessage(MessageModel messageModel) {
+    public MessageModel sendMessage(MessageModel messageModel) throws Exception {
         UserModel currentUser = this.getCurrentUser();
+
+        if (!currentUser.getFriendList().contains(messageModel.getReceiver())) {
+            throw new Exception(messageModel.getReceiver() + " is not your friend.");
+        }
 
         messageModel.setSender(currentUser.getEmail());
         messageModel.setTimestamp(LocalDateTime.now());
