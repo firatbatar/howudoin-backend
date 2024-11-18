@@ -15,5 +15,5 @@ import java.util.HashSet;
 public class GroupModel {
     @Id
     private String name;
-    private HashSet<String> members;
+    private HashSet<String> members = new HashSet<>();
 }
