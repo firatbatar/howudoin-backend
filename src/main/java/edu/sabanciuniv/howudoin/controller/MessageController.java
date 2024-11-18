@@ -1,6 +1,6 @@
 package edu.sabanciuniv.howudoin.controller;
 
-import edu.sabanciuniv.howudoin.component.Message;
+import edu.sabanciuniv.howudoin.model.MessageModel;
 import edu.sabanciuniv.howudoin.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,12 +15,12 @@ public class MessageController {
     private MessageService messageService;
 
     @PostMapping("/send")
-    public ResponseEntity<Message> sendMessage(@RequestBody Message message) {
-        return ResponseEntity.ok(message);
+    public ResponseEntity<MessageModel> sendMessage(@RequestBody MessageModel messageModel) {
+        return ResponseEntity.ok(messageModel);
     }
 
     @GetMapping
-    public ResponseEntity<List<Message>> getMessages() {
+    public ResponseEntity<List<MessageModel>> getMessages() {
         return ResponseEntity.ok().build();
     }
 }

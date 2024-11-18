@@ -1,4 +1,4 @@
-package edu.sabanciuniv.howudoin.component;
+package edu.sabanciuniv.howudoin.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Message {
+public class MessageModel {
     @Id
     private String id;
     private String senderId;

@@ -1,8 +1,11 @@
 package edu.sabanciuniv.howudoin.repository;
 
+import edu.sabanciuniv.howudoin.model.MessageModel;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface MessageRepository extends MongoRepository<Message, String> {
-    List<Message> findBySenderIdAndReceiverIdOrderByTimestampDesc(String senderId, String receiverId);
-    List<Message> findByGroupIdOrderByTimestampDesc(String groupId);
+import java.util.List;
+
+public interface MessageRepository extends MongoRepository<MessageModel, String> {
+    List<MessageModel> findBySenderIdAndReceiverIdOrderByTimestampDesc(String senderId, String receiverId);
+    List<MessageModel> findByGroupIdOrderByTimestampDesc(String groupId);
 }
