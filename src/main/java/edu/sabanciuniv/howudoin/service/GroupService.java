@@ -1,6 +1,7 @@
 package edu.sabanciuniv.howudoin.service;
 
 import edu.sabanciuniv.howudoin.model.GroupModel;
+import edu.sabanciuniv.howudoin.model.UserInfoModel;
 import edu.sabanciuniv.howudoin.model.UserModel;
 import edu.sabanciuniv.howudoin.model.UserRequest;
 import edu.sabanciuniv.howudoin.repository.GroupRepository;
@@ -49,6 +50,18 @@ public class GroupService {
         } catch (NoSuchElementException _) {
             throw new NoSuchElementException("Group with id '" + groupId + "' not found");
         }
+    }
+
+    public HashSet<UserInfoModel> getMembers(String groupId) {
+        GroupModel groupModel = groupRepository.findById(groupId).orElseThrow();
+
+        HashSet<UserInfoModel> members = new HashSet<>();
+        groupModel.getMembers().forEach(email -> {
+            UserModel user = userRepository.findById(email).orElseThrow();
+            members.add(new UserInfoModel(user.getEmail(), user.getName(), user.getLastname()));
+        });
+
+        return members;
     }
 
     private UserModel getCurrentUser() {

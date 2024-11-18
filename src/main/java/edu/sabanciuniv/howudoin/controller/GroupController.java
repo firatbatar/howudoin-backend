@@ -1,6 +1,7 @@
 package edu.sabanciuniv.howudoin.controller;
 
 import edu.sabanciuniv.howudoin.model.GroupModel;
+import edu.sabanciuniv.howudoin.model.UserInfoModel;
 import edu.sabanciuniv.howudoin.model.UserRequest;
 import edu.sabanciuniv.howudoin.service.GroupService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashSet;
 import java.util.NoSuchElementException;
 
 @RestController
@@ -49,13 +51,16 @@ public class GroupController {
 
     @PostMapping("/{groupId}/send-message")
     public void sendMessage(@PathVariable String groupId) {
+        // Will be implemented after message service is implemented
     }
 
     @GetMapping("/{groupId}/messages")
     public void getMessages(@PathVariable String groupId) {
+        // Will be implemented after message service is implemented
     }
 
     @GetMapping("/{groupId}/members")
-    public void getMembers(@PathVariable String groupId) {
+    public ResponseEntity<HashSet<UserInfoModel>> getMembers(@PathVariable String groupId) {
+        return ResponseEntity.ok(groupService.getMembers(groupId));
     }
 }
