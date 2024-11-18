@@ -26,6 +26,7 @@ public class MessageController {
 
     @GetMapping
     public ResponseEntity<List<MessageModel>> getMessages() {
-        return ResponseEntity.ok().build();
+        List<MessageModel> messages = messageService.getMessages();
+        return ResponseEntity.ok(messages);
     }
 }
