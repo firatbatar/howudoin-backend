@@ -40,7 +40,7 @@ public class GroupService extends GenericService {
         return this.groupRepository.save(groupModel);
     }
 
-    public void addMember(String groupId, String email) throws Exception {
+    public GroupModel addMember(String groupId, String email) throws Exception {
         this.getUserByEmail(email);
         this.assertMembershipOfCurrentUser(groupId);
 
@@ -51,7 +51,7 @@ public class GroupService extends GenericService {
         groupModel.getMembers().add(email);
 
         this.userRepository.save(newMember);
-        this.groupRepository.save(groupModel);
+        return this.groupRepository.save(groupModel);
     }
 
     public MessageModel sendMessage(String groupId, MessageModel messageModel) throws Exception {

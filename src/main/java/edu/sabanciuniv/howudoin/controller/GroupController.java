@@ -53,13 +53,9 @@ public class GroupController {
         }
 
         try {
-            this.groupService.addMember(groupId, email);
+            GroupModel updatedGroup = this.groupService.addMember(groupId, email);
             return ResponseEntity
-                    .ok(new GenericResponse(
-                            GenericResponse.Status.SUCCESS,
-                            "Member '" + email + "' added to group " + groupId,
-                            null
-                    ));
+                    .ok(new GenericResponse(GenericResponse.Status.SUCCESS, null, updatedGroup));
         } catch (Exception e) {
             return ResponseEntity
                     .badRequest()
