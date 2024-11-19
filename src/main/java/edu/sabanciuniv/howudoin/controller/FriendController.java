@@ -67,7 +67,7 @@ public class FriendController {
                     httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
                     response = new GenericResponse(GenericResponse.Status.ERROR, "An error occurred.", null);
                 }
-            };
+            }
         } catch (Exception e) {
             return ResponseEntity
                     .internalServerError()
