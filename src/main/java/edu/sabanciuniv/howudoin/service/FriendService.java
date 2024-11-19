@@ -1,11 +1,9 @@
 package edu.sabanciuniv.howudoin.service;
 
-import edu.sabanciuniv.howudoin.component.JwtHelperUtils;
 import edu.sabanciuniv.howudoin.model.UserInfoModel;
 import edu.sabanciuniv.howudoin.model.UserModel;
 import edu.sabanciuniv.howudoin.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -24,7 +22,7 @@ public class FriendService extends GenericService {
         UserModel user = this.getCurrentUser();
 
         try {
-            UserModel friend = userRepository.findById(friendEmail).orElseThrow();
+            UserModel friend = this.getUserByEmail(friendEmail);
 
             if (friend.getFriendList().contains(user.getEmail())) return 0;
 
@@ -43,7 +41,7 @@ public class FriendService extends GenericService {
         HashSet<String> friendRequests = user.getFriendRequests();
         try {
             friendRequests.forEach(friendEmail -> {
-                UserModel friend = userRepository.findById(friendEmail).orElseThrow();
+                UserModel friend = this.getUserByEmail(friendEmail);
                 friendList.add(friendEmail);
                 friend.getFriendList().add(user.getEmail());
                 userRepository.save(friend);
@@ -64,7 +62,7 @@ public class FriendService extends GenericService {
         ArrayList<UserInfoModel> friendList = new ArrayList<>();
         user.getFriendList().forEach(friendEmail -> {
             try {
-                UserModel friend = userRepository.findById(friendEmail).orElseThrow();
+                UserModel friend = this.getUserByEmail(friendEmail);
                 friendList.add(new UserInfoModel(friend.getEmail(), friend.getName(), friend.getLastname()));
             } catch (NoSuchElementException _) {
                 friendList.add(new UserInfoModel(friendEmail, null, null));

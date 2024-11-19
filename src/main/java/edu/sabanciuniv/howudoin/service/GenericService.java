@@ -21,4 +21,12 @@ public abstract class GenericService {
             throw new NoSuchElementException("User not found");
         }
     }
+
+    protected UserModel getUserByEmail(String email) throws NoSuchElementException {
+        try {
+            return userRepository.findById(email).orElseThrow();
+        } catch (NoSuchElementException e) {
+            throw new NoSuchElementException("User with email '" + email + "' not found");
+        }
+    }
 }

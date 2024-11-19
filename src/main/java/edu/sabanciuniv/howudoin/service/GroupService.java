@@ -1,6 +1,5 @@
 package edu.sabanciuniv.howudoin.service;
 
-import edu.sabanciuniv.howudoin.component.JwtHelperUtils;
 import edu.sabanciuniv.howudoin.model.GroupModel;
 import edu.sabanciuniv.howudoin.model.MessageModel;
 import edu.sabanciuniv.howudoin.model.UserInfoModel;
@@ -9,7 +8,6 @@ import edu.sabanciuniv.howudoin.repository.GroupRepository;
 import edu.sabanciuniv.howudoin.repository.MessageRepository;
 import edu.sabanciuniv.howudoin.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -42,12 +40,7 @@ public class GroupService extends GenericService{
     }
 
     public void addMember(String groupId, String email) throws Exception {
-        try {
-            userRepository.findById(email).orElseThrow();
-        } catch (NoSuchElementException _) {
-            throw new NoSuchElementException("User with email '" + email + "' not found");
-        }
-
+        this.getUserByEmail(email);
         assertMembershipOfCurrentUser(groupId);
 
         GroupModel groupModel = groupRepository.findById(groupId).orElseThrow();
@@ -77,7 +70,7 @@ public class GroupService extends GenericService{
         GroupModel groupModel = groupRepository.findById(groupId).orElseThrow();
 
         return groupModel.getMembers().stream().map(email -> {
-            UserModel user = userRepository.findById(email).orElseThrow();
+            UserModel user = this.getUserByEmail(email);
             return new UserInfoModel(user.getEmail(), user.getName(), user.getLastname());
         }).collect(Collectors.toCollection(HashSet::new));
     }
