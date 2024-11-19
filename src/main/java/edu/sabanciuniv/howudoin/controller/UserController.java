@@ -3,6 +3,7 @@ package edu.sabanciuniv.howudoin.controller;
 import edu.sabanciuniv.howudoin.component.JwtHelperUtils;
 import edu.sabanciuniv.howudoin.model.LoginModel;
 import edu.sabanciuniv.howudoin.model.LoginResponse;
+import edu.sabanciuniv.howudoin.model.UserInfoModel;
 import edu.sabanciuniv.howudoin.model.UserModel;
 import edu.sabanciuniv.howudoin.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,8 +39,8 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserModel> registerNewUser(@RequestBody UserModel userModel) {
-        UserModel newUser = this.userService.registerUser(userModel);
+    public ResponseEntity<UserInfoModel> registerNewUser(@RequestBody UserModel userModel) {
+        UserInfoModel newUser = this.userService.registerUser(userModel);
         return ResponseEntity.ok(newUser);
     }
 
@@ -47,18 +48,16 @@ public class UserController {
     public ResponseEntity<LoginResponse> login(@RequestBody LoginModel loginModel) throws BadCredentialsException {
         this.doAuthenticate(loginModel.getEmail(), loginModel.getPassword());
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername(loginModel.getEmail());
+        UserDetails userDetails = this.userDetailsService.loadUserByUsername(loginModel.getEmail());
         String token = this.jwtHelperUtils.generateToken(userDetails);
-        return ResponseEntity.ok(
-                new LoginResponse(token, loginModel.getEmail())
-        );
+        return ResponseEntity.ok(new LoginResponse(token));
     }
 
     private void doAuthenticate(String username, String password) throws BadCredentialsException {
         UsernamePasswordAuthenticationToken authentication =
                 new UsernamePasswordAuthenticationToken(username, password);
         try {
-            authenticationManager.authenticate(authentication);
+            this.authenticationManager.authenticate(authentication);
         } catch (BadCredentialsException e) {
             throw new BadCredentialsException("Invalid Username or Password!");
         }

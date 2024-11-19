@@ -4,7 +4,6 @@ import edu.sabanciuniv.howudoin.model.UserInfoModel;
 import edu.sabanciuniv.howudoin.model.UserModel;
 import edu.sabanciuniv.howudoin.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -13,19 +12,17 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
-public class FriendService {
-    private final UserRepository userRepository;
-
+public class FriendService extends GenericService {
     @Autowired
     public FriendService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+        super(userRepository);
     }
 
     public int sendFriendRequest(String friendEmail) {
-        UserModel user = getCurrentUser();
+        UserModel user = this.getCurrentUser();
 
         try {
-            UserModel friend = userRepository.findById(friendEmail).orElseThrow();
+            UserModel friend = this.getUserByEmail(friendEmail);
 
             if (friend.getFriendList().contains(user.getEmail())) return 0;
 
@@ -38,13 +35,13 @@ public class FriendService {
     }
 
     public HashSet<String> acceptFriendRequests() {
-        UserModel user = getCurrentUser();
+        UserModel user = this.getCurrentUser();
 
         HashSet<String> friendList = user.getFriendList();
         HashSet<String> friendRequests = user.getFriendRequests();
         try {
             friendRequests.forEach(friendEmail -> {
-                UserModel friend = userRepository.findById(friendEmail).orElseThrow();
+                UserModel friend = this.getUserByEmail(friendEmail);
                 friendList.add(friendEmail);
                 friend.getFriendList().add(user.getEmail());
                 userRepository.save(friend);
@@ -60,12 +57,12 @@ public class FriendService {
     }
 
     public List<UserInfoModel> getFriendList() {
-        UserModel user = getCurrentUser();
+        UserModel user = this.getCurrentUser();
 
         ArrayList<UserInfoModel> friendList = new ArrayList<>();
         user.getFriendList().forEach(friendEmail -> {
             try {
-                UserModel friend = userRepository.findById(friendEmail).orElseThrow();
+                UserModel friend = this.getUserByEmail(friendEmail);
                 friendList.add(new UserInfoModel(friend.getEmail(), friend.getName(), friend.getLastname()));
             } catch (NoSuchElementException _) {
                 friendList.add(new UserInfoModel(friendEmail, null, null));
@@ -73,10 +70,5 @@ public class FriendService {
         });
 
         return friendList;
-    }
-
-    private UserModel getCurrentUser() {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        return userRepository.findById(email).orElseThrow();
     }
 }

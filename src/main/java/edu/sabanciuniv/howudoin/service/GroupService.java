@@ -8,7 +8,6 @@ import edu.sabanciuniv.howudoin.repository.GroupRepository;
 import edu.sabanciuniv.howudoin.repository.MessageRepository;
 import edu.sabanciuniv.howudoin.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -18,9 +17,8 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
-public class GroupService {
+public class GroupService extends GenericService {
     private final GroupRepository groupRepository;
-    private final UserRepository userRepository;
     private final MessageRepository messageRepository;
 
     @Autowired
@@ -29,25 +27,20 @@ public class GroupService {
             UserRepository userRepository,
             MessageRepository messageRepository
     ) {
+        super(userRepository);
         this.groupRepository = groupRepository;
-        this.userRepository = userRepository;
         this.messageRepository = messageRepository;
     }
 
     public GroupModel createGroup(GroupModel groupModel) {
-        UserModel currentUser = getCurrentUser();
+        UserModel currentUser = this.getCurrentUser();
         groupModel.getMembers().add(currentUser.getEmail());
 
         return groupRepository.save(groupModel);
     }
 
     public void addMember(String groupId, String email) throws Exception {
-        try {
-            userRepository.findById(email).orElseThrow();
-        } catch (NoSuchElementException _) {
-            throw new NoSuchElementException("User with email '" + email + "' not found");
-        }
-
+        this.getUserByEmail(email);
         assertMembershipOfCurrentUser(groupId);
 
         GroupModel groupModel = groupRepository.findById(groupId).orElseThrow();
@@ -57,7 +50,7 @@ public class GroupService {
     public MessageModel sendMessage(String groupId, MessageModel messageModel) throws Exception {
         assertMembershipOfCurrentUser(groupId);
 
-        UserModel currentUser = getCurrentUser();
+        UserModel currentUser = this.getCurrentUser();
         messageModel.setSender(currentUser.getEmail());
         messageModel.setTimestamp(LocalDateTime.now());
         messageModel.setReceiver(groupId);
@@ -77,18 +70,13 @@ public class GroupService {
         GroupModel groupModel = groupRepository.findById(groupId).orElseThrow();
 
         return groupModel.getMembers().stream().map(email -> {
-            UserModel user = userRepository.findById(email).orElseThrow();
+            UserModel user = this.getUserByEmail(email);
             return new UserInfoModel(user.getEmail(), user.getName(), user.getLastname());
         }).collect(Collectors.toCollection(HashSet::new));
     }
 
-    private UserModel getCurrentUser() {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        return userRepository.findById(email).orElseThrow();
-    }
-
     private void assertMembershipOfCurrentUser(String groupId) throws Exception {
-        UserModel user = getCurrentUser();
+        UserModel user = this.getCurrentUser();
         try {
             GroupModel groupModel = groupRepository.findById(groupId).orElseThrow();
             if (!groupModel.getMembers().contains(user.getEmail())) {

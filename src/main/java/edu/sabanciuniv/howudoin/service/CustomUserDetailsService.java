@@ -29,6 +29,6 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     private UserModel getUserByUsername(String username) {
-        return userRepository.findById(username).orElseThrow();
+        return this.userRepository.findById(username).orElseThrow();
     }
 }
