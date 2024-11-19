@@ -20,4 +20,5 @@ public class UserModel {
     private String password;
     private HashSet<String> friendList = new HashSet<>();
     private HashSet<String> friendRequests = new HashSet<>();
+    private HashSet<String> groupList = new HashSet<>();
 }

@@ -21,5 +21,4 @@ public class MessageModel {
     private String receiver;
     private String content;
     private LocalDateTime timestamp;
-    private String groupId;
 }
