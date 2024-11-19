@@ -1,5 +1,6 @@
 package edu.sabanciuniv.howudoin.service;
 
+import edu.sabanciuniv.howudoin.component.JwtHelperUtils;
 import edu.sabanciuniv.howudoin.model.UserInfoModel;
 import edu.sabanciuniv.howudoin.model.UserModel;
 import edu.sabanciuniv.howudoin.repository.UserRepository;
@@ -13,16 +14,14 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
-public class FriendService {
-    private final UserRepository userRepository;
-
+public class FriendService extends GenericService {
     @Autowired
     public FriendService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+        super(userRepository);
     }
 
     public int sendFriendRequest(String friendEmail) {
-        UserModel user = getCurrentUser();
+        UserModel user = this.getCurrentUser();
 
         try {
             UserModel friend = userRepository.findById(friendEmail).orElseThrow();
@@ -38,7 +37,7 @@ public class FriendService {
     }
 
     public HashSet<String> acceptFriendRequests() {
-        UserModel user = getCurrentUser();
+        UserModel user = this.getCurrentUser();
 
         HashSet<String> friendList = user.getFriendList();
         HashSet<String> friendRequests = user.getFriendRequests();
@@ -60,7 +59,7 @@ public class FriendService {
     }
 
     public List<UserInfoModel> getFriendList() {
-        UserModel user = getCurrentUser();
+        UserModel user = this.getCurrentUser();
 
         ArrayList<UserInfoModel> friendList = new ArrayList<>();
         user.getFriendList().forEach(friendEmail -> {
@@ -73,10 +72,5 @@ public class FriendService {
         });
 
         return friendList;
-    }
-
-    private UserModel getCurrentUser() {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        return userRepository.findById(email).orElseThrow();
     }
 }
