@@ -68,7 +68,7 @@ public class GroupService {
         return messageRepository.save(messageModel);
     }
 
-    public List<MessageModel> getMessages(String groupId) throws Exception{
+    public List<MessageModel> getMessages(String groupId) throws Exception {
         if (!isMember(groupId)) throw new Exception("You are not a member of this group");
 
         return messageRepository.findByReceiverOrderByTimestampDesc(groupId);
