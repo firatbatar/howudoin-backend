@@ -17,7 +17,7 @@ public class UserService {
     }
 
     public UserInfoModel registerUser(UserModel userModel) {
-        UserModel newUser = userRepository.save(userModel);
+        UserModel newUser = this.userRepository.save(userModel);
         return new UserInfoModel(newUser.getEmail(), newUser.getName(), newUser.getLastname());
     }
 }

@@ -48,7 +48,7 @@ public class UserController {
     public ResponseEntity<LoginResponse> login(@RequestBody LoginModel loginModel) throws BadCredentialsException {
         this.doAuthenticate(loginModel.getEmail(), loginModel.getPassword());
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername(loginModel.getEmail());
+        UserDetails userDetails = this.userDetailsService.loadUserByUsername(loginModel.getEmail());
         String token = this.jwtHelperUtils.generateToken(userDetails);
         return ResponseEntity.ok(new LoginResponse(token));
     }
@@ -57,7 +57,7 @@ public class UserController {
         UsernamePasswordAuthenticationToken authentication =
                 new UsernamePasswordAuthenticationToken(username, password);
         try {
-            authenticationManager.authenticate(authentication);
+            this.authenticationManager.authenticate(authentication);
         } catch (BadCredentialsException e) {
             throw new BadCredentialsException("Invalid Username or Password!");
         }

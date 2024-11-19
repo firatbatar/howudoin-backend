@@ -33,7 +33,7 @@ public class JwtHelperUtils {
     private Claims getAllClaimsFromToken(String token) {
         return Jwts
                 .parser()
-                .verifyWith(secret)
+                .verifyWith(this.secret)
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
@@ -55,7 +55,7 @@ public class JwtHelperUtils {
                 .subject(subject)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 1000))
-                .signWith(secret, Jwts.SIG.HS512).compact();
+                .signWith(this.secret, Jwts.SIG.HS512).compact();
     }
 
     public Boolean validateToken(String token, UserDetails userDetails) {
