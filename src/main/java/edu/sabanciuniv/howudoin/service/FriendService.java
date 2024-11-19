@@ -1,6 +1,5 @@
 package edu.sabanciuniv.howudoin.service;
 
-import edu.sabanciuniv.howudoin.model.UserInfoModel;
 import edu.sabanciuniv.howudoin.model.UserModel;
 import edu.sabanciuniv.howudoin.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,15 +54,14 @@ public class FriendService extends GenericService {
         return friendRequests;
     }
 
-    public HashSet<UserInfoModel> getFriendList() {
+    public HashSet<UserModel> getFriendList() {
         UserModel user = this.getCurrentUser();
 
         return user.getFriendList().stream().map(friendEmail -> {
             try {
-                UserModel friend = this.getUserByEmail(friendEmail);
-                return new UserInfoModel(friend.getEmail(), friend.getName(), friend.getLastname());
+                return this.getUserByEmail(friendEmail).hideInfo();
             } catch (NoSuchElementException _) {
-                return new UserInfoModel(friendEmail, null, null);
+                return new UserModel(friendEmail, null, null, null, null, null, null);
             }
         }).collect(Collectors.toCollection(HashSet::new));
     }

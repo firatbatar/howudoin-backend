@@ -1,7 +1,7 @@
 package edu.sabanciuniv.howudoin.controller;
 
 import edu.sabanciuniv.howudoin.model.GenericResponse;
-import edu.sabanciuniv.howudoin.model.UserInfoModel;
+import edu.sabanciuniv.howudoin.model.UserModel;
 import edu.sabanciuniv.howudoin.model.UserRequest;
 import edu.sabanciuniv.howudoin.service.FriendService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,7 +111,7 @@ public class FriendController {
     @GetMapping
     public ResponseEntity<GenericResponse> getFriendList() {
         try {
-            HashSet<UserInfoModel> friendList = friendService.getFriendList();
+            HashSet<UserModel> friendList = friendService.getFriendList();
             return ResponseEntity.ok(
                     new GenericResponse(
                             GenericResponse.Status.SUCCESS,

@@ -3,7 +3,7 @@ package edu.sabanciuniv.howudoin.controller;
 import edu.sabanciuniv.howudoin.model.GenericResponse;
 import edu.sabanciuniv.howudoin.model.GroupModel;
 import edu.sabanciuniv.howudoin.model.MessageModel;
-import edu.sabanciuniv.howudoin.model.UserInfoModel;
+import edu.sabanciuniv.howudoin.model.UserModel;
 import edu.sabanciuniv.howudoin.model.UserRequest;
 import edu.sabanciuniv.howudoin.service.GroupService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,7 +99,7 @@ public class GroupController {
     @GetMapping("/{groupId}/members")
     public ResponseEntity<GenericResponse> getMembers(@PathVariable String groupId) {
         try {
-            HashSet<UserInfoModel> members = groupService.getMembers(groupId);
+            HashSet<UserModel> members = groupService.getMembers(groupId);
             return ResponseEntity
                     .ok(new GenericResponse(GenericResponse.Status.SUCCESS, null, members));
         } catch (Exception e) {
