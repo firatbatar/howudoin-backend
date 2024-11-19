@@ -1,5 +1,6 @@
 package edu.sabanciuniv.howudoin.service;
 
+import edu.sabanciuniv.howudoin.model.UserInfoModel;
 import edu.sabanciuniv.howudoin.model.UserModel;
 import edu.sabanciuniv.howudoin.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,8 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public UserModel registerUser(UserModel userModel) {
-        return userRepository.save(userModel);
+    public UserInfoModel registerUser(UserModel userModel) {
+        UserModel newUser = userRepository.save(userModel);
+        return new UserInfoModel(newUser.getEmail(), newUser.getName(), newUser.getLastname());
     }
 }

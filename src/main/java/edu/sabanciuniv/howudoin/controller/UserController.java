@@ -3,6 +3,7 @@ package edu.sabanciuniv.howudoin.controller;
 import edu.sabanciuniv.howudoin.component.JwtHelperUtils;
 import edu.sabanciuniv.howudoin.model.LoginModel;
 import edu.sabanciuniv.howudoin.model.LoginResponse;
+import edu.sabanciuniv.howudoin.model.UserInfoModel;
 import edu.sabanciuniv.howudoin.model.UserModel;
 import edu.sabanciuniv.howudoin.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,8 +39,8 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserModel> registerNewUser(@RequestBody UserModel userModel) {
-        UserModel newUser = this.userService.registerUser(userModel);
+    public ResponseEntity<UserInfoModel> registerNewUser(@RequestBody UserModel userModel) {
+        UserInfoModel newUser = this.userService.registerUser(userModel);
         return ResponseEntity.ok(newUser);
     }
 
