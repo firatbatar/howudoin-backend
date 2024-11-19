@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
@@ -66,8 +67,15 @@ public class GroupController {
     }
 
     @GetMapping("/{groupId}/messages")
-    public void getMessages(@PathVariable String groupId) {
-        // Will be implemented after message service is implemented
+    public ResponseEntity<List<MessageModel>> getMessages(@PathVariable String groupId) {
+        try {
+            List<MessageModel> messages = groupService.getMessages(groupId);
+            return ResponseEntity.ok(messages);
+        } catch (Exception e) {
+            MessageModel message = new MessageModel();
+            message.setContent(e.getMessage());
+            return ResponseEntity.badRequest().body(List.of(message));
+        }
     }
 
     @GetMapping("/{groupId}/members")

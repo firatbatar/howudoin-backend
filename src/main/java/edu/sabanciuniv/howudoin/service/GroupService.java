@@ -58,21 +58,20 @@ public class GroupService {
     }
 
     public MessageModel sendMessage(String groupId, MessageModel messageModel) throws Exception {
-        UserModel currentUser = getCurrentUser();
-        try {
-            GroupModel groupModel = groupRepository.findById(groupId).orElseThrow();
-            if (!groupModel.getMembers().contains(currentUser.getEmail())) {
-                throw new Exception("You are not a member of this group");
-            }
-        } catch (NoSuchElementException _) {
-            throw new NoSuchElementException("Group with id '" + groupId + "' not found");
-        }
+        if (!isMember(groupId)) throw new Exception("You are not a member of this group");
 
+        UserModel currentUser = getCurrentUser();
         messageModel.setSender(currentUser.getEmail());
         messageModel.setTimestamp(LocalDateTime.now());
         messageModel.setReceiver(groupId);
         System.out.println(messageModel);
         return messageRepository.save(messageModel);
+    }
+
+    public List<MessageModel> getMessages(String groupId) throws Exception{
+        if (!isMember(groupId)) throw new Exception("You are not a member of this group");
+
+        return messageRepository.findByReceiverOrderByTimestampDesc(groupId);
     }
 
     public HashSet<UserInfoModel> getMembers(String groupId) {
@@ -90,5 +89,15 @@ public class GroupService {
     private UserModel getCurrentUser() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         return userRepository.findById(email).orElseThrow();
+    }
+
+    private Boolean isMember(String groupId) throws NoSuchElementException {
+        UserModel user = getCurrentUser();
+        try {
+            GroupModel groupModel = groupRepository.findById(groupId).orElseThrow();
+            return groupModel.getMembers().contains(user.getEmail());
+        } catch (NoSuchElementException e) {
+            throw new NoSuchElementException("Group with id '" + groupId + "' not found");
+        }
     }
 }

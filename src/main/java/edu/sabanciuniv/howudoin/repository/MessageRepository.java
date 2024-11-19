@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface MessageRepository extends MongoRepository<MessageModel, String> {
     List<MessageModel> findBySenderAndReceiverOrderByTimestampDesc(String sender, String receiver);
+
+    List<MessageModel> findByReceiverOrderByTimestampDesc(String receiver);
 }
