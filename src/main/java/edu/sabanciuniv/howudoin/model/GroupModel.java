@@ -8,17 +8,13 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.HashSet;
 
-@Document("Users")
+@Document("Groups")
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class UserModel {
+@NoArgsConstructor
+public class GroupModel {
     @Id
-    private String email;
+    private String id;
     private String name;
-    private String lastname;
-    private String password;
-    private HashSet<String> friendList = new HashSet<>();
-    private HashSet<String> friendRequests = new HashSet<>();
-    private HashSet<String> groupList = new HashSet<>();
+    private HashSet<String> members = new HashSet<>();
 }

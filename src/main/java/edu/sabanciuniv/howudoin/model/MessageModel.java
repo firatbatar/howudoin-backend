@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.time.LocalDateTime;
 
 @Document(collection = "messages")
@@ -20,5 +21,4 @@ public class MessageModel {
     private String receiver;
     private String content;
     private LocalDateTime timestamp;
-    private String groupId;
 }

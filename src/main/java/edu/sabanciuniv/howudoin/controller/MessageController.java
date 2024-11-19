@@ -1,11 +1,15 @@
 package edu.sabanciuniv.howudoin.controller;
 
-import edu.sabanciuniv.howudoin.model.FriendRequest;
 import edu.sabanciuniv.howudoin.model.MessageModel;
+import edu.sabanciuniv.howudoin.model.UserRequest;
 import edu.sabanciuniv.howudoin.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -33,8 +37,8 @@ public class MessageController {
     }
 
     @GetMapping
-    public ResponseEntity<List<MessageModel>> getMessages(@RequestBody FriendRequest friendRequest) {
-        List<MessageModel> messages = messageService.getMessages(friendRequest.getEmail());
+    public ResponseEntity<List<MessageModel>> getMessages(@RequestBody UserRequest userRequest) {
+        List<MessageModel> messages = messageService.getMessages(userRequest.getEmail());
         return ResponseEntity.ok(messages);
     }
 }
