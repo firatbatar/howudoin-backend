@@ -49,9 +49,7 @@ public class UserController {
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(loginModel.getEmail());
         String token = this.jwtHelperUtils.generateToken(userDetails);
-        return ResponseEntity.ok(
-                new LoginResponse(token, loginModel.getEmail())
-        );
+        return ResponseEntity.ok(new LoginResponse(token));
     }
 
     private void doAuthenticate(String username, String password) throws BadCredentialsException {
