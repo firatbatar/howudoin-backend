@@ -1,5 +1,6 @@
 package edu.sabanciuniv.howudoin.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,6 +13,7 @@ import java.util.HashSet;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserModel {
     @Id
     private String email;
@@ -21,4 +23,8 @@ public class UserModel {
     private HashSet<String> friendList = new HashSet<>();
     private HashSet<String> friendRequests = new HashSet<>();
     private HashSet<String> groupList = new HashSet<>();
+
+    public UserModel hideInfo() {
+        return new UserModel(email, name, lastname, null, null, null, null);
+    }
 }

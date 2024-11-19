@@ -2,7 +2,6 @@ package edu.sabanciuniv.howudoin.service;
 
 import edu.sabanciuniv.howudoin.model.GroupModel;
 import edu.sabanciuniv.howudoin.model.MessageModel;
-import edu.sabanciuniv.howudoin.model.UserInfoModel;
 import edu.sabanciuniv.howudoin.model.UserModel;
 import edu.sabanciuniv.howudoin.repository.GroupRepository;
 import edu.sabanciuniv.howudoin.repository.MessageRepository;
@@ -64,15 +63,14 @@ public class GroupService extends GenericService {
         return messageRepository.findByReceiverOrderByTimestampDesc(groupId);
     }
 
-    public HashSet<UserInfoModel> getMembers(String groupId) throws Exception {
+    public HashSet<UserModel> getMembers(String groupId) throws Exception {
         assertMembershipOfCurrentUser(groupId);
 
         GroupModel groupModel = groupRepository.findById(groupId).orElseThrow();
 
-        return groupModel.getMembers().stream().map(email -> {
-            UserModel user = this.getUserByEmail(email);
-            return new UserInfoModel(user.getEmail(), user.getName(), user.getLastname());
-        }).collect(Collectors.toCollection(HashSet::new));
+        return groupModel.getMembers()
+                .stream()
+                .map(email -> this.getUserByEmail(email).hideInfo()).collect(Collectors.toCollection(HashSet::new));
     }
 
     private void assertMembershipOfCurrentUser(String groupId) throws Exception {

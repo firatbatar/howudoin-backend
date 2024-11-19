@@ -1,8 +1,9 @@
 package edu.sabanciuniv.howudoin.controller;
 
+import edu.sabanciuniv.howudoin.model.GenericResponse;
 import edu.sabanciuniv.howudoin.model.GroupModel;
 import edu.sabanciuniv.howudoin.model.MessageModel;
-import edu.sabanciuniv.howudoin.model.UserInfoModel;
+import edu.sabanciuniv.howudoin.model.UserModel;
 import edu.sabanciuniv.howudoin.model.UserRequest;
 import edu.sabanciuniv.howudoin.service.GroupService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,60 +29,83 @@ public class GroupController {
     }
 
     @PostMapping("/create")
-    public GroupModel createGroup(@RequestBody GroupModel groupModel) {
-        return groupService.createGroup(groupModel);
+    public ResponseEntity<GenericResponse> createGroup(@RequestBody GroupModel groupModel) {
+        try {
+            GroupModel group = groupService.createGroup(groupModel);
+            return ResponseEntity.ok(new GenericResponse(GenericResponse.Status.SUCCESS, null, group));
+        } catch (Exception e) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new GenericResponse(GenericResponse.Status.ERROR, e.getMessage(), null));
+        }
     }
 
     @PostMapping("/{groupId}/add-member")
-    public ResponseEntity<String> addMember(
+    public ResponseEntity<GenericResponse> addMember(
             @PathVariable String groupId,
             @RequestBody UserRequest userRequest
     ) {
         final String email = userRequest.getEmail();
-        if (userRequest.getEmail() == null) return ResponseEntity.badRequest().body("Email cannot be null.");
+        if (userRequest.getEmail() == null) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new GenericResponse(GenericResponse.Status.ERROR, "Email cannot be null.", null));
+        }
 
         try {
             groupService.addMember(groupId, email);
-            return ResponseEntity.ok("Member '" + email + "' added to group " + groupId);
+            return ResponseEntity
+                    .ok(new GenericResponse(
+                            GenericResponse.Status.SUCCESS,
+                            "Member '" + email + "' added to group " + groupId,
+                            null
+                    ));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity
+                    .badRequest()
+                    .body(new GenericResponse(GenericResponse.Status.ERROR, e.getMessage(), null));
         }
     }
 
     @PostMapping("/{groupId}/send-message")
-    public ResponseEntity<MessageModel> sendMessage(
+    public ResponseEntity<GenericResponse> sendMessage(
             @PathVariable String groupId,
             @RequestBody MessageModel messageModel
     ) {
         try {
             MessageModel message = groupService.sendMessage(groupId, messageModel);
-            return ResponseEntity.ok(message);
+            return ResponseEntity
+                    .ok(new GenericResponse(GenericResponse.Status.SUCCESS, null, message));
         } catch (Exception e) {
-            MessageModel message = new MessageModel();
-            message.setContent(e.getMessage());
-            return ResponseEntity.badRequest().body(message);
+            return ResponseEntity
+                    .badRequest()
+                    .body(new GenericResponse(GenericResponse.Status.ERROR, e.getMessage(), null));
         }
     }
 
     @GetMapping("/{groupId}/messages")
-    public ResponseEntity<List<MessageModel>> getMessages(@PathVariable String groupId) {
+    public ResponseEntity<GenericResponse> getMessages(@PathVariable String groupId) {
         try {
             List<MessageModel> messages = groupService.getMessages(groupId);
-            return ResponseEntity.ok(messages);
+            return ResponseEntity
+                    .ok(new GenericResponse(GenericResponse.Status.SUCCESS, null, messages));
         } catch (Exception e) {
-            MessageModel message = new MessageModel();
-            message.setContent(e.getMessage());
-            return ResponseEntity.badRequest().body(List.of(message));
+            return ResponseEntity
+                    .badRequest()
+                    .body(new GenericResponse(GenericResponse.Status.ERROR, e.getMessage(), null));
         }
     }
 
     @GetMapping("/{groupId}/members")
-    public ResponseEntity<HashSet<UserInfoModel>> getMembers(@PathVariable String groupId) {
+    public ResponseEntity<GenericResponse> getMembers(@PathVariable String groupId) {
         try {
-            HashSet<UserInfoModel> members = groupService.getMembers(groupId);
-            return ResponseEntity.ok(members);
+            HashSet<UserModel> members = groupService.getMembers(groupId);
+            return ResponseEntity
+                    .ok(new GenericResponse(GenericResponse.Status.SUCCESS, null, members));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity
+                    .badRequest()
+                    .body(new GenericResponse(GenericResponse.Status.ERROR, e.getMessage(), null));
         }
     }
 }

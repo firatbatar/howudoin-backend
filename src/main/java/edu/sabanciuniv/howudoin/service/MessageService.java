@@ -40,8 +40,10 @@ public class MessageService extends GenericService {
     public List<MessageModel> getMessages(String friendEmail) {
         UserModel currentUser = this.getCurrentUser();
 
-        List<MessageModel> sentMessages = messageRepository.findBySenderAndReceiverOrderByTimestampDesc(currentUser.getEmail(), friendEmail);
-        List<MessageModel> receivedMessages = messageRepository.findBySenderAndReceiverOrderByTimestampDesc(friendEmail, currentUser.getEmail());
+        List<MessageModel> sentMessages =
+                messageRepository.findBySenderAndReceiverOrderByTimestampDesc(currentUser.getEmail(), friendEmail);
+        List<MessageModel> receivedMessages =
+                messageRepository.findBySenderAndReceiverOrderByTimestampDesc(friendEmail, currentUser.getEmail());
 
         List<MessageModel> messages = new ArrayList<>();
         messages.addAll(sentMessages);

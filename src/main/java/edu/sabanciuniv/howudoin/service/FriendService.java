@@ -1,15 +1,13 @@
 package edu.sabanciuniv.howudoin.service;
 
-import edu.sabanciuniv.howudoin.model.UserInfoModel;
 import edu.sabanciuniv.howudoin.model.UserModel;
 import edu.sabanciuniv.howudoin.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 public class FriendService extends GenericService {
@@ -56,19 +54,15 @@ public class FriendService extends GenericService {
         return friendRequests;
     }
 
-    public List<UserInfoModel> getFriendList() {
+    public HashSet<UserModel> getFriendList() {
         UserModel user = this.getCurrentUser();
 
-        ArrayList<UserInfoModel> friendList = new ArrayList<>();
-        user.getFriendList().forEach(friendEmail -> {
+        return user.getFriendList().stream().map(friendEmail -> {
             try {
-                UserModel friend = this.getUserByEmail(friendEmail);
-                friendList.add(new UserInfoModel(friend.getEmail(), friend.getName(), friend.getLastname()));
+                return this.getUserByEmail(friendEmail).hideInfo();
             } catch (NoSuchElementException _) {
-                friendList.add(new UserInfoModel(friendEmail, null, null));
+                return new UserModel(friendEmail, null, null, null, null, null, null);
             }
-        });
-
-        return friendList;
+        }).collect(Collectors.toCollection(HashSet::new));
     }
 }
