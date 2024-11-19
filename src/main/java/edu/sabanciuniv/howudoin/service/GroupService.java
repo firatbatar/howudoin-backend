@@ -34,39 +34,47 @@ public class GroupService extends GenericService {
     public GroupModel createGroup(GroupModel groupModel) {
         UserModel currentUser = this.getCurrentUser();
         groupModel.getMembers().add(currentUser.getEmail());
+        currentUser.getGroupList().add(groupModel.getId());
 
-        return groupRepository.save(groupModel);
+        this.userRepository.save(currentUser);
+        return this.groupRepository.save(groupModel);
     }
 
     public void addMember(String groupId, String email) throws Exception {
         this.getUserByEmail(email);
-        assertMembershipOfCurrentUser(groupId);
+        this.assertMembershipOfCurrentUser(groupId);
 
-        GroupModel groupModel = groupRepository.findById(groupId).orElseThrow();
+        GroupModel groupModel = this.groupRepository.findById(groupId).orElseThrow();
+        UserModel newMember = this.getUserByEmail(email);
+
+        newMember.getGroupList().add(groupId);
         groupModel.getMembers().add(email);
+
+        this.userRepository.save(newMember);
+        this.groupRepository.save(groupModel);
     }
 
     public MessageModel sendMessage(String groupId, MessageModel messageModel) throws Exception {
-        assertMembershipOfCurrentUser(groupId);
+        this.assertMembershipOfCurrentUser(groupId);
 
         UserModel currentUser = this.getCurrentUser();
         messageModel.setSender(currentUser.getEmail());
         messageModel.setTimestamp(LocalDateTime.now());
         messageModel.setReceiver(groupId);
 
-        return messageRepository.save(messageModel);
+        return this.messageRepository.save(messageModel);
     }
 
     public List<MessageModel> getMessages(String groupId) throws Exception {
-        assertMembershipOfCurrentUser(groupId);
+        this.assertMembershipOfCurrentUser(groupId);
 
-        return messageRepository.findByReceiverOrderByTimestampDesc(groupId);
+        return this.messageRepository.findByReceiverOrderByTimestampDesc(groupId);
     }
 
     public HashSet<UserModel> getMembers(String groupId) throws Exception {
-        assertMembershipOfCurrentUser(groupId);
+        this.assertMembershipOfCurrentUser(groupId);
 
-        GroupModel groupModel = groupRepository.findById(groupId).orElseThrow();
+        GroupModel groupModel = this.groupRepository.findById(groupId).orElseThrow();
 
         return groupModel.getMembers()
                 .stream()
@@ -76,7 +84,7 @@ public class GroupService extends GenericService {
     private void assertMembershipOfCurrentUser(String groupId) throws Exception {
         UserModel user = this.getCurrentUser();
         try {
-            GroupModel groupModel = groupRepository.findById(groupId).orElseThrow();
+            GroupModel groupModel = this.groupRepository.findById(groupId).orElseThrow();
             if (!groupModel.getMembers().contains(user.getEmail())) {
                 throw new Exception("Current user is not a member of group " + groupId);
             }

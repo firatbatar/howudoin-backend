@@ -31,7 +31,7 @@ public class GroupController {
     @PostMapping("/create")
     public ResponseEntity<GenericResponse> createGroup(@RequestBody GroupModel groupModel) {
         try {
-            GroupModel group = groupService.createGroup(groupModel);
+            GroupModel group = this.groupService.createGroup(groupModel);
             return ResponseEntity.ok(new GenericResponse(GenericResponse.Status.SUCCESS, null, group));
         } catch (Exception e) {
             return ResponseEntity
@@ -53,7 +53,7 @@ public class GroupController {
         }
 
         try {
-            groupService.addMember(groupId, email);
+            this.groupService.addMember(groupId, email);
             return ResponseEntity
                     .ok(new GenericResponse(
                             GenericResponse.Status.SUCCESS,
@@ -73,7 +73,7 @@ public class GroupController {
             @RequestBody MessageModel messageModel
     ) {
         try {
-            MessageModel message = groupService.sendMessage(groupId, messageModel);
+            MessageModel message = this.groupService.sendMessage(groupId, messageModel);
             return ResponseEntity
                     .ok(new GenericResponse(GenericResponse.Status.SUCCESS, null, message));
         } catch (Exception e) {
@@ -86,7 +86,7 @@ public class GroupController {
     @GetMapping("/{groupId}/messages")
     public ResponseEntity<GenericResponse> getMessages(@PathVariable String groupId) {
         try {
-            List<MessageModel> messages = groupService.getMessages(groupId);
+            List<MessageModel> messages = this.groupService.getMessages(groupId);
             return ResponseEntity
                     .ok(new GenericResponse(GenericResponse.Status.SUCCESS, null, messages));
         } catch (Exception e) {
