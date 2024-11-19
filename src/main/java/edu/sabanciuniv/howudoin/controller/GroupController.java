@@ -1,6 +1,7 @@
 package edu.sabanciuniv.howudoin.controller;
 
 import edu.sabanciuniv.howudoin.model.GroupModel;
+import edu.sabanciuniv.howudoin.model.MessageModel;
 import edu.sabanciuniv.howudoin.model.UserInfoModel;
 import edu.sabanciuniv.howudoin.model.UserRequest;
 import edu.sabanciuniv.howudoin.service.GroupService;
@@ -50,8 +51,18 @@ public class GroupController {
     }
 
     @PostMapping("/{groupId}/send-message")
-    public void sendMessage(@PathVariable String groupId) {
-        // Will be implemented after message service is implemented
+    public ResponseEntity<MessageModel> sendMessage(
+            @PathVariable String groupId,
+            @RequestBody MessageModel messageModel
+    ) {
+        try {
+            MessageModel message = groupService.sendMessage(groupId, messageModel);
+            return ResponseEntity.ok(message);
+        } catch (Exception e) {
+            MessageModel message = new MessageModel();
+            message.setContent(e.getMessage());
+            return ResponseEntity.badRequest().body(message);
+        }
     }
 
     @GetMapping("/{groupId}/messages")
