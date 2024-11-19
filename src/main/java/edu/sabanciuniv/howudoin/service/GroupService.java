@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 public class GroupService {
@@ -35,55 +36,50 @@ public class GroupService {
 
     public GroupModel createGroup(GroupModel groupModel) {
         UserModel currentUser = getCurrentUser();
-        HashSet<String> members = groupModel.getMembers();
-        members.add(currentUser.getEmail());
-        groupModel.setMembers(members);
+        groupModel.getMembers().add(currentUser.getEmail());
+
         return groupRepository.save(groupModel);
     }
 
-    public void addMember(String groupId, String email) {
+    public void addMember(String groupId, String email) throws Exception {
         try {
             userRepository.findById(email).orElseThrow();
         } catch (NoSuchElementException _) {
             throw new NoSuchElementException("User with email '" + email + "' not found");
         }
 
-        try {
-            GroupModel groupModel = groupRepository.findById(groupId).orElseThrow();
-            groupModel.getMembers().add(email);
-            groupRepository.save(groupModel);
-        } catch (NoSuchElementException _) {
-            throw new NoSuchElementException("Group with id '" + groupId + "' not found");
-        }
+        assertMembershipOfCurrentUser(groupId);
+
+        GroupModel groupModel = groupRepository.findById(groupId).orElseThrow();
+        groupModel.getMembers().add(email);
     }
 
     public MessageModel sendMessage(String groupId, MessageModel messageModel) throws Exception {
-        if (!isMember(groupId)) throw new Exception("You are not a member of this group");
+        assertMembershipOfCurrentUser(groupId);
 
         UserModel currentUser = getCurrentUser();
         messageModel.setSender(currentUser.getEmail());
         messageModel.setTimestamp(LocalDateTime.now());
         messageModel.setReceiver(groupId);
-        System.out.println(messageModel);
+
         return messageRepository.save(messageModel);
     }
 
     public List<MessageModel> getMessages(String groupId) throws Exception {
-        if (!isMember(groupId)) throw new Exception("You are not a member of this group");
+        assertMembershipOfCurrentUser(groupId);
 
         return messageRepository.findByReceiverOrderByTimestampDesc(groupId);
     }
 
-    public HashSet<UserInfoModel> getMembers(String groupId) {
+    public HashSet<UserInfoModel> getMembers(String groupId) throws Exception {
+        assertMembershipOfCurrentUser(groupId);
+
         GroupModel groupModel = groupRepository.findById(groupId).orElseThrow();
 
-        HashSet<UserInfoModel> members = new HashSet<>();
-        groupModel.getMembers().forEach(email -> {
+        return groupModel.getMembers().stream().map(email -> {
             UserModel user = userRepository.findById(email).orElseThrow();
-            members.add(new UserInfoModel(user.getEmail(), user.getName(), user.getLastname()));
-        });
-
-        return members;
+            return new UserInfoModel(user.getEmail(), user.getName(), user.getLastname());
+        }).collect(Collectors.toCollection(HashSet::new));
     }
 
     private UserModel getCurrentUser() {
@@ -91,11 +87,13 @@ public class GroupService {
         return userRepository.findById(email).orElseThrow();
     }
 
-    private Boolean isMember(String groupId) throws NoSuchElementException {
+    private void assertMembershipOfCurrentUser(String groupId) throws Exception {
         UserModel user = getCurrentUser();
         try {
             GroupModel groupModel = groupRepository.findById(groupId).orElseThrow();
-            return groupModel.getMembers().contains(user.getEmail());
+            if (!groupModel.getMembers().contains(user.getEmail())) {
+                throw new Exception("Current user is not a member of group " + groupId);
+            }
         } catch (NoSuchElementException e) {
             throw new NoSuchElementException("Group with id '" + groupId + "' not found");
         }

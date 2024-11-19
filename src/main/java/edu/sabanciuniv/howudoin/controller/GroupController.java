@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/groups")
@@ -39,14 +38,12 @@ public class GroupController {
             @RequestBody UserRequest userRequest
     ) {
         final String email = userRequest.getEmail();
-        if (userRequest.getEmail() == null) {
-            return ResponseEntity.badRequest().body("Email cannot be null.");
-        }
+        if (userRequest.getEmail() == null) return ResponseEntity.badRequest().body("Email cannot be null.");
 
         try {
             groupService.addMember(groupId, email);
-            return ResponseEntity.ok("Member '" + email + "' added successfully");
-        } catch (NoSuchElementException e) {
+            return ResponseEntity.ok("Member '" + email + "' added to group " + groupId);
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -80,6 +77,11 @@ public class GroupController {
 
     @GetMapping("/{groupId}/members")
     public ResponseEntity<HashSet<UserInfoModel>> getMembers(@PathVariable String groupId) {
-        return ResponseEntity.ok(groupService.getMembers(groupId));
+        try {
+            HashSet<UserInfoModel> members = groupService.getMembers(groupId);
+            return ResponseEntity.ok(members);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 }
