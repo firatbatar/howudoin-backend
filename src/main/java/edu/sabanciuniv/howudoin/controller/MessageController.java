@@ -1,5 +1,6 @@
 package edu.sabanciuniv.howudoin.controller;
 
+import edu.sabanciuniv.howudoin.model.GenericResponse;
 import edu.sabanciuniv.howudoin.model.MessageModel;
 import edu.sabanciuniv.howudoin.model.UserRequest;
 import edu.sabanciuniv.howudoin.service.MessageService;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/messages")
@@ -24,21 +26,36 @@ public class MessageController {
     }
 
     @PostMapping("/send")
-    public ResponseEntity<MessageModel> sendMessage(@RequestBody MessageModel messageModel) {
+    public ResponseEntity<GenericResponse> sendMessage(@RequestBody MessageModel messageModel) {
         try {
             MessageModel message = messageService.sendMessage(messageModel);
-            return ResponseEntity.ok(message);
+            return ResponseEntity
+                    .ok(new GenericResponse(GenericResponse.Status.SUCCESS, null, message));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new GenericResponse(GenericResponse.Status.ERROR, e.getMessage(), null));
         } catch (Exception e) {
-            MessageModel message = new MessageModel();
-            message.setContent(e.getMessage());
-            return ResponseEntity.badRequest().body(message);
+            return ResponseEntity
+                    .internalServerError()
+                    .body(new GenericResponse(GenericResponse.Status.ERROR, e.getMessage(), null));
         }
-
     }
 
     @GetMapping
-    public ResponseEntity<List<MessageModel>> getMessages(@RequestBody UserRequest userRequest) {
-        List<MessageModel> messages = messageService.getMessages(userRequest.getEmail());
-        return ResponseEntity.ok(messages);
+    public ResponseEntity<GenericResponse> getMessages(@RequestBody UserRequest userRequest) {
+        try {
+            List<MessageModel> messages = messageService.getMessages(userRequest.getEmail());
+            return ResponseEntity
+                    .ok(new GenericResponse(GenericResponse.Status.SUCCESS, null, messages));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new GenericResponse(GenericResponse.Status.ERROR, e.getMessage(), null));
+        } catch (Exception e) {
+            return ResponseEntity
+                    .internalServerError()
+                    .body(new GenericResponse(GenericResponse.Status.ERROR, e.getMessage(), null));
+        }
     }
 }
