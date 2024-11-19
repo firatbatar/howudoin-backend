@@ -17,7 +17,7 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
-public class GroupService extends GenericService{
+public class GroupService extends GenericService {
     private final GroupRepository groupRepository;
     private final MessageRepository messageRepository;
 
