@@ -54,6 +54,18 @@ public class FriendService extends GenericService {
         return friendRequests;
     }
 
+    public HashSet<UserModel> getFriendRequests() {
+        UserModel user = this.getCurrentUser();
+
+        return user.getFriendRequests().stream().map(requestEmail -> {
+            try {
+                return this.getUserByEmail(requestEmail).hideInfo();
+            } catch (NoSuchElementException _) {
+                return new UserModel(requestEmail, null, null, null, null, null, null);
+            }
+        }).collect(Collectors.toCollection(HashSet::new));
+    }
+
     public HashSet<UserModel> getFriendList() {
         UserModel user = this.getCurrentUser();
 
