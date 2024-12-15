@@ -108,6 +108,38 @@ public class FriendController {
         }
     }
 
+    @GetMapping("/requests")
+    public ResponseEntity<GenericResponse> getFriendRequests() {
+        try {
+            HashSet<UserModel> friendRequests = friendService.getFriendRequests();
+
+            final HttpStatus httpStatus;
+            final GenericResponse response;
+
+            if (friendRequests == null) {
+                httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+                response = new GenericResponse(GenericResponse.Status.ERROR, "An error occurred.", null);
+            } else if (friendRequests.isEmpty()) {
+                httpStatus = HttpStatus.OK;
+                response = new GenericResponse(GenericResponse.Status.SUCCESS, "No active friend requests.", null);
+            } else {
+                httpStatus = HttpStatus.OK;
+                response = new GenericResponse(
+                        GenericResponse.Status.SUCCESS,
+                        "Friend requests: " + friendRequests,
+                        friendRequests
+                );
+            }
+
+            return ResponseEntity.status(httpStatus).body(response);
+        } catch (Exception e) {
+            return ResponseEntity
+                    .internalServerError()
+                    .body(new GenericResponse(GenericResponse.Status.ERROR, e.getMessage(), null));
+        }
+    }
+
+
     @GetMapping
     public ResponseEntity<GenericResponse> getFriendList() {
         try {
