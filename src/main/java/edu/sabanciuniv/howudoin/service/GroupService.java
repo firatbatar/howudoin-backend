@@ -81,6 +81,18 @@ public class GroupService extends GenericService {
                 .map(email -> this.getUserByEmail(email).hideInfo()).collect(Collectors.toCollection(HashSet::new));
     }
 
+    public HashSet<GroupModel> getGroupList() {
+        UserModel user = this.getCurrentUser();
+
+        return user.getGroupList().stream().map(groupId -> {
+            try {
+                return this.groupRepository.findById(groupId).orElseThrow();
+            } catch (NoSuchElementException _) {
+                return new GroupModel(groupId, null, null);
+            }
+        }).collect(Collectors.toCollection(HashSet::new));
+    }
+
     private void assertMembershipOfCurrentUser(String groupId) throws Exception {
         UserModel user = this.getCurrentUser();
         try {
