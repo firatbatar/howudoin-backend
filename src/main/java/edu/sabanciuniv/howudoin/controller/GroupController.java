@@ -104,4 +104,22 @@ public class GroupController {
                     .body(new GenericResponse(GenericResponse.Status.ERROR, e.getMessage(), null));
         }
     }
+
+    @GetMapping
+    public ResponseEntity<GenericResponse> getGroupList() {
+        try {
+            HashSet<GroupModel> groupList = groupService.getGroupList();
+            return ResponseEntity.ok(
+                    new GenericResponse(
+                            GenericResponse.Status.SUCCESS,
+                            null,
+                            groupList
+                    )
+            );
+        } catch (Exception e) {
+            return ResponseEntity
+                    .internalServerError()
+                    .body(new GenericResponse(GenericResponse.Status.ERROR, e.getMessage(), null));
+        }
+    }
 }
