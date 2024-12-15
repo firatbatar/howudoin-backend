@@ -33,11 +33,22 @@ public class GroupService extends GenericService {
 
     public GroupModel createGroup(GroupModel groupModel) {
         UserModel currentUser = this.getCurrentUser();
-        groupModel.getMembers().add(currentUser.getEmail());
-        currentUser.getGroupList().add(groupModel.getId());
 
-        this.userRepository.save(currentUser);
-        return this.groupRepository.save(groupModel);
+        groupModel.getMembers().add(currentUser.getEmail());
+
+        GroupModel savedGroup = this.groupRepository.save(groupModel);
+
+        savedGroup.getMembers().forEach(email -> {
+            try {
+                UserModel user = this.getUserByEmail(email);
+                user.getGroupList().add(savedGroup.getId());
+                this.userRepository.save(user);
+            } catch (NoSuchElementException e) {
+                System.out.println("User with email '" + email + "' not found");
+            }
+        });
+
+        return savedGroup;
     }
 
     public GroupModel addMember(String groupId, String email) throws Exception {
