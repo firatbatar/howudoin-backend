@@ -2,7 +2,6 @@ package edu.sabanciuniv.howudoin.controller;
 
 import edu.sabanciuniv.howudoin.model.GenericResponse;
 import edu.sabanciuniv.howudoin.model.MessageModel;
-import edu.sabanciuniv.howudoin.model.UserRequest;
 import edu.sabanciuniv.howudoin.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -43,9 +43,9 @@ public class MessageController {
     }
 
     @GetMapping
-    public ResponseEntity<GenericResponse> getMessages(@RequestBody UserRequest userRequest) {
+    public ResponseEntity<GenericResponse> getMessages(@RequestParam("history") String id) {
         try {
-            List<MessageModel> messages = messageService.getMessages(userRequest.getEmail());
+            List<MessageModel> messages = messageService.getMessages(id);
             return ResponseEntity
                     .ok(new GenericResponse(GenericResponse.Status.SUCCESS, null, messages));
         } catch (NoSuchElementException e) {
