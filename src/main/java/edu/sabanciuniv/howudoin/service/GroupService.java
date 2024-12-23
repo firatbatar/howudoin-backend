@@ -70,6 +70,7 @@ public class GroupService extends GenericService {
 
         UserModel currentUser = this.getCurrentUser();
         messageModel.setSender(currentUser.getEmail());
+        messageModel.setSenderName(currentUser.getName() + " " + currentUser.getLastname());
         messageModel.setTimestamp(LocalDateTime.now());
         messageModel.setReceiver(groupId);
 

@@ -16,6 +16,7 @@ public class MessageModel {
     @Id
     private String id;
     private String sender;
+    private String senderName;
     private String receiver;
     private String content;
     private LocalDateTime timestamp;
