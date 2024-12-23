@@ -7,15 +7,20 @@ import org.springframework.stereotype.Service;
 
 
 @Service
-public class UserService {
-    private final UserRepository userRepository;
-
+public class UserService extends GenericService {
     @Autowired
     public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+        super(userRepository);
     }
 
     public UserModel registerUser(UserModel userModel) {
+        try {
+            this.getUserByEmail(userModel.getEmail());
+            return null;
+        } catch (Exception e) {
+            // User not found, continue
+        }
+
         UserModel newUser = this.userRepository.save(userModel);
         return newUser.hideInfo();
     }
