@@ -1,6 +1,7 @@
 package edu.sabanciuniv.howudoin.controller;
 
 import edu.sabanciuniv.howudoin.component.JwtHelperUtils;
+import edu.sabanciuniv.howudoin.model.GenericResponse;
 import edu.sabanciuniv.howudoin.model.LoginModel;
 import edu.sabanciuniv.howudoin.model.LoginResponse;
 import edu.sabanciuniv.howudoin.model.UserModel;
@@ -38,9 +39,18 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserModel> registerNewUser(@RequestBody UserModel userModel) {
+    public ResponseEntity<GenericResponse> registerNewUser(@RequestBody UserModel userModel) {
         UserModel newUser = this.userService.registerUser(userModel);
-        return ResponseEntity.ok(newUser);
+
+        if (newUser == null) {
+            return ResponseEntity.badRequest().body(
+                    new GenericResponse(GenericResponse.Status.ERROR, "User already exists.", null)
+            );
+        }
+
+        return ResponseEntity.ok(
+                new GenericResponse(GenericResponse.Status.SUCCESS, "User registered successfully.", newUser)
+        );
     }
 
     @PostMapping("/login")
