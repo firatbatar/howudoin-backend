@@ -32,6 +32,7 @@ public class MessageService extends GenericService {
         }
 
         messageModel.setSender(currentUser.getEmail());
+        messageModel.setSenderName(currentUser.getName() + " " + currentUser.getLastname());
         messageModel.setTimestamp(LocalDateTime.now());
 
         return messageRepository.save(messageModel);
